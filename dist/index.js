@@ -107,7 +107,9 @@ function loadServiceEventHandlers(service, params, data) {
   };
   return unloadEventHandlers;
 }
-var useFind_default = (feathers) => (serviceName, params = (0, import_vue.ref)({ paginate: false, query: {} }), { disableUnloadingEventHandlers } = { disableUnloadingEventHandlers: false }) => {
+var defaultOptions = { disableUnloadingEventHandlers: false, chunking: false };
+var useFind_default = (feathers) => (serviceName, params = (0, import_vue.ref)({ paginate: false, query: {} }), options = {}) => {
+  const { disableUnloadingEventHandlers, chunking } = __spreadValues(__spreadValues({}, defaultOptions), options);
   const data = (0, import_vue.ref)([]);
   const isLoading = (0, import_vue.ref)(false);
   const error = (0, import_vue.ref)();
@@ -133,15 +135,13 @@ var useFind_default = (feathers) => (serviceName, params = (0, import_vue.ref)({
       if (isPaginated(res)) {
         let loadedPage = res;
         let loadedItemsCount = loadedPage.data.length;
-        const limit = originalQuery.$limit || loadedPage.data.length;
         data.value = [...loadedPage.data];
-        while (!unloaded && loadedPage.total > loadedItemsCount) {
+        const limit = originalQuery.$limit || loadedPage.data.length;
+        while (chunking && !unloaded && loadedPage.total > loadedItemsCount) {
           const skip = typeof loadedPage.skip === "string" ? loadedPage.skip : loadedPage.skip + limit;
-          const nextParams = __spreadProps(__spreadValues({}, originalParams), {
-            paginate: true,
+          loadedPage = await service.find(__spreadProps(__spreadValues({}, originalParams), {
             query: __spreadProps(__spreadValues({}, originalQuery), { $skip: skip, $limit: limit })
-          });
-          loadedPage = await service.find(nextParams);
+          }));
           if (call !== currentFindCall.value) {
             return;
           }

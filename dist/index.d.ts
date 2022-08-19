@@ -13,9 +13,11 @@ declare type UseFind<T> = {
     unload: () => void;
 };
 declare type UseFindFunc<CustomApplication> = <T extends keyof ServiceTypes<CustomApplication>, M = ServiceModel<CustomApplication, T>>(serviceName: T, params?: Ref<Params | undefined | null>) => UseFind<M>;
-declare const _default$1: <CustomApplication extends Application<any, any>>(feathers: CustomApplication) => <T extends keyof ServiceTypes<CustomApplication>, M = ServiceModel<CustomApplication, T>>(serviceName: T, params?: Ref<Params | undefined | null>, { disableUnloadingEventHandlers }?: {
+declare type Options = {
     disableUnloadingEventHandlers: boolean;
-}) => UseFind<M>;
+    chunking: boolean;
+};
+declare const _default$1: <CustomApplication extends Application<any, any>>(feathers: CustomApplication) => <T extends keyof ServiceTypes<CustomApplication>, M = ServiceModel<CustomApplication, T>>(serviceName: T, params?: Ref<Params | undefined | null>, options?: Partial<Options>) => UseFind<M>;
 
 declare type UseGet<T> = {
     data: Ref<T | undefined>;
