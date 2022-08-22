@@ -423,7 +423,7 @@ describe('Find composition', () => {
     expect(findComposition && findComposition.error.value).toBeTruthy();
   });
 
-  it('should also load single entity response', async () => {
+  it('should load single entity response', async () => {
     expect.assertions(3);
 
     // given
@@ -1037,7 +1037,7 @@ describe('Find composition', () => {
       // when
       let findComposition = null as UseFind<TestModel> | null;
       mountComposition(() => {
-        findComposition = useFind('testModels', undefined, { chunking: true });
+        findComposition = useFind('testModels', undefined, { loadAllPages: true });
       });
       await nextTick();
 
@@ -1047,7 +1047,7 @@ describe('Find composition', () => {
       expect(findComposition && findComposition.data.value).toStrictEqual(testModels);
     });
 
-    it('should also load chunked data with lastEvaluatedKey patterns (misused $skip for it)', async () => {
+    it('should load data with pagination using lastEvaluatedKey patterns', async () => {
       expect.assertions(3);
 
       // given
@@ -1077,7 +1077,7 @@ describe('Find composition', () => {
       // when
       let findComposition = null as UseFind<TestModel> | null;
       mountComposition(() => {
-        findComposition = useFind('testModels', undefined, { chunking: true });
+        findComposition = useFind('testModels', undefined, { loadAllPages: true });
       });
       await nextTick();
 
@@ -1087,7 +1087,7 @@ describe('Find composition', () => {
       expect(findComposition && findComposition.data.value).toStrictEqual(testModels);
     });
 
-    it('should stop further page requests if find was retriggered due to e.g. reactivity', async () => {
+    it('should stop further page requests if find was retriggered due to a change to params or connection reset', async () => {
       expect.assertions(3);
 
       // given
@@ -1116,7 +1116,7 @@ describe('Find composition', () => {
       const useFind = useFindOriginal(feathersMock);
       let findComposition = null as UseFind<TestModel> | null;
       mountComposition(() => {
-        findComposition = useFind('testModels', undefined, { chunking: true });
+        findComposition = useFind('testModels', undefined, { loadAllPages: true });
       });
       await nextTick();
       serviceFind.mockClear();
